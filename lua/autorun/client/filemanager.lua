@@ -281,7 +281,7 @@ FM.func = {
         end
 
         if not FM.paths[gamepath] then
-            return L"gamepath_no_exists"
+            gamepath = "DATA"
         end
 
         if not date then
