@@ -5,6 +5,12 @@
 local FM = {}
 FM.root = "file_manager"
 FM.cache = ""
+FM.date = {
+    ["1"] = "%d-%m-%Y",
+    ["2"] = "%m-%d-%Y",
+    ["3"] = "%Y-%m-%d",
+    ["4"] = "%Y-%d-%m"
+}
 FM.cmds = {
     ["append"] = true,
     ["asyncread"] = true,
@@ -57,6 +63,7 @@ FM.lang = {
         ["file_invalid"]    = "file isn't valid or doesn't exists",
         ["file_created"]    = "file successful created",
         ["file_removed"]    = "file successful removed",
+        ["file_renamed"]    = "file successful renamed",
 
         ["dir_exists"]      = "directory already exists",
         ["dir_no_exists"]   = "directory doesn't exists",
@@ -79,6 +86,7 @@ FM.lang = {
         ["file_invalid"]    = "el archivo es invalido o no existe",
         ["file_created"]    = "archivo creado con exito",
         ["file_removed"]    = "archivo eliminado con exito",
+        ["file_renamed"]    = "archivo renombrado con exito",
 
         ["dir_exists"]      = "el directorio existe",
         ["dir_no_exists"]   = "el directorio no existe",
@@ -155,13 +163,8 @@ FM.func = {
         end
 
         dir = dir .. name
-
-        if file.IsDir(dir, "DATA") then
-            return L"dir_exists"
-        end
-
-        file.CreateDir(dir)
-        return L"dir_created"
+        
+        return file.IsDir(dir, "DATA") and L"dir_exists" or file.CreateDir(dir) and L"dir_created"
     end,
 
     ------------------
@@ -169,6 +172,7 @@ FM.func = {
     ------------------
     ["delete"] = function(name, global)
         local dir = FM.root .. "/"
+    
         if global then
             dir = ""
         end
@@ -180,12 +184,10 @@ FM.func = {
         end
 
         if file.IsDir(dir, "DATA") then
-            file.Delete(dir)
-            return L"dir_removed"
+            return file.Delete(dir) and L"dir_removed"
         end
-
-        file.Delete(dir)
-        return L"file_removed"
+        
+        return file.Delete(dir) and L"file_removed"
     end,
 
     ------------------
@@ -198,7 +200,7 @@ FM.func = {
         end
 
         if not FM.paths[gamepath] then
-            return L"gamepath_no_exists"
+            gamepath = "DATA"
         end
 
         return file.Exists(name, gamepath) and L"file_dir_found" or L"file_dir_not_found"
@@ -206,8 +208,93 @@ FM.func = {
     end,
 
     ------------------
-    ------ Find ------
+    ------ IsDir -----
     ------------------
+    ["isdir"] = function(dir, gamepath)
+
+        if not gamepath then
+            gamepath = "DATA"
+        end
+
+        if not FM.paths[gamepath] then
+            gamepath = "DATA"
+        end
+
+        return file.IsDir(dir, gamepath) and L"dir_found" or L"dir_no_exists"
+        
+    end,
+
+    ------------------
+    ------ Read ------
+    ------------------
+    ["read"] = function(name, gamepath)
+
+        if not gamepath then
+            gamepath = "DATA"
+        end
+
+        if not FM.paths[gamepath] then
+            gamepath = "DATA"
+        end
+
+        return file.Read(name, gamepath) or 
+
+    end,
+
+    ------------------
+    ----- Rename -----
+    ------------------
+    ["rename"] = function(old, new)
+
+        if not ( old and new ) then
+            return L"ins_args"
+        end
+    
+        return file.Exists(old, "DATA") and file.Rename(old, new) and L"file_renamed" or L"file_no_exists"
+
+    end,
+
+    ------------------
+    ------ Size ------
+    ------------------
+    ["size"] = function(name, gamepath)
+
+        if not gamepath then
+            gamepath = "DATA"
+        end
+
+        if not FM.paths[gamepath] then
+            gamepath = "DATA"
+        end
+
+        return file.Exists(name, gamepath) and file.Size(name, gamepath) or L"file_no_exists"
+        
+    end,
+
+    ------------------
+    ------ Time ------
+    ------------------
+    ["time"] = function(name, gamepath, date)
+
+        if not gamepath then
+            gamepath = "DATA"
+        end
+
+        if not FM.paths[gamepath] then
+            return L"gamepath_no_exists"
+        end
+
+        if not date then
+            date = FM.date["1"]
+        end
+
+        if not FM.date[date] then
+            date = date["1"]
+        end
+
+        return file.Exists(name, gamepath) and os.date( date, file.Time(name, gamepath) ) or L"file_no_exists"
+
+    end
 }
 
 -----------------------------------
