@@ -237,7 +237,7 @@ FM.func = {
             gamepath = "DATA"
         end
 
-        return file.Read(name, gamepath) or 
+        return file.Read(name, gamepath) or L"file_no_exists"
 
     end,
 
