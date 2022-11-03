@@ -137,7 +137,7 @@ FM.func = {
         end
 
         if not FM.paths[gamepath] then
-            return L"gamepath_no_exists"
+            gamepath = "DATA"
         end
 
         local aStatus, aData = "", ""
@@ -157,6 +157,10 @@ FM.func = {
     ---- CreateDir ---
     ------------------
     ["createdir"] = function(name, global)
+        if not name then
+            return L"ins_args"
+        end
+
         local dir = FM.root .. "/"
         if global then
             dir = ""
@@ -171,6 +175,10 @@ FM.func = {
     ----- Delete -----
     ------------------
     ["delete"] = function(name, global)
+        if not name then
+            return L"ins_args"
+        end
+
         local dir = FM.root .. "/"
     
         if global then
@@ -194,6 +202,9 @@ FM.func = {
     ------ Find ------
     ------------------
     ["exists"] = function(name, gamepath)
+        if not name then
+            return L"ins_args"
+        end
 
         if not gamepath then
             gamepath = "DATA"
@@ -210,7 +221,10 @@ FM.func = {
     ------------------
     ------ IsDir -----
     ------------------
-    ["isdir"] = function(dir, gamepath)
+    ["isdir"] = function(name, gamepath)
+        if not name then
+            return L"ins_args"
+        end
 
         if not gamepath then
             gamepath = "DATA"
@@ -220,7 +234,7 @@ FM.func = {
             gamepath = "DATA"
         end
 
-        return file.IsDir(dir, gamepath) and L"dir_found" or L"dir_no_exists"
+        return file.IsDir(name, gamepath) and L"dir_found" or L"dir_no_exists"
         
     end,
 
@@ -228,6 +242,9 @@ FM.func = {
     ------ Read ------
     ------------------
     ["read"] = function(name, gamepath)
+        if not name then
+            return L"ins_args"
+        end
 
         if not gamepath then
             gamepath = "DATA"
@@ -258,6 +275,9 @@ FM.func = {
     ------ Size ------
     ------------------
     ["size"] = function(name, gamepath)
+        if not name then
+            return L"ins_args"
+        end
 
         if not gamepath then
             gamepath = "DATA"
@@ -275,6 +295,9 @@ FM.func = {
     ------ Time ------
     ------------------
     ["time"] = function(name, gamepath, date)
+        if not name then
+            return L"ins_args"
+        end
 
         if not gamepath then
             gamepath = "DATA"
